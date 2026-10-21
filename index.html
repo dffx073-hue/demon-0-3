@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Нейропоиск по интернету</title>
+<title>Нейропошук по інтернету</title>
 <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -15,30 +15,30 @@
       <line x1="10.6" y1="11.3" x2="17.6" y2="18.6"/><line x1="10.6" y1="28.7" x2="17.6" y2="21.4"/>
       <line x1="22.4" y1="18.6" x2="29.4" y2="13.4"/><line x1="22.4" y1="21.4" x2="29.4" y2="26.6"/>
     </svg>
-    <h1>Нейропоиск по интернету</h1>
+    <h1>Нейропошук по інтернету</h1>
   </header>
-  <p class="lead">Ищет по-настоящему в интернете (через открытый API Wikipedia — без ключа, без сервера) и подсказывает варианты запроса на лету. Результаты переранжирует маленькая нейросеть, которая учится на ваших кликах.</p>
+  <p class="lead">Шукає по-справжньому в інтернеті (через відкритий API Wikipedia — без ключа, без сервера) і підказує варіанти запиту на льоту. Результати переранжовує маленька нейромережа, яка вчиться на ваших кліках.</p>
 
   <div class="search-box">
-    <input id="q" type="text" placeholder="Например: чёрные дыры" autocomplete="off">
+    <input id="q" type="text" placeholder="Наприклад: чорні діри" autocomplete="off">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
   </div>
   <div class="suggestions" id="suggestions"></div>
   <div class="meta-row">
     <span id="count"></span>
-    <span class="net-badge"><span class="dot" id="dot"></span><span id="netstate">сеть готова</span></span>
+    <span class="net-badge"><span class="dot" id="dot"></span><span id="netstate">мережа готова</span></span>
   </div>
   <div class="results" id="results"></div>
-  <button class="reset" id="resetBtn">Сбросить обучение сети</button>
+  <button class="reset" id="resetBtn">Скинути навчання мережі</button>
 
   <div class="note">
-    Источник данных — <code>ru.wikipedia.org/w/api.php</code>, открытый и бесплатный, работает прямо из браузера без ключа.
-    Если нужен поиск как в Google/Bing по всему вебу — это возможно, но только с API-ключом (Google Programmable Search, Bing Search API или SerpAPI), потому что сами поисковики не разрешают браузеру стучаться к ним напрямую. Функция <code>fetchResults()</code> ниже — единственное место, которое нужно поменять на такой API.
+    Джерело даних — <code>uk.wikipedia.org/w/api.php</code>, відкрите й безкоштовне, працює прямо з браузера без ключа.
+    Якщо потрібен пошук як у Google/Bing по всьому вебу — це можливо, але тільки з API-ключем (Google Programmable Search, Bing Search API або SerpAPI), бо самі пошукові системи не дозволяють браузеру стукатися до них напряму. Функція <code>fetchResults()</code> нижче — єдине місце, яке потрібно замінити на такий API.
   </div>
 </div>
 
 <script>
-const API = 'https://ru.wikipedia.org/w/api.php';
+const API = 'https://uk.wikipedia.org/w/api.php';
 
 async function fetchSuggestions(q){
   if(!q.trim()) return [];
@@ -48,7 +48,7 @@ async function fetchSuggestions(q){
   return data[1] || [];
 }
 
-/* ЕДИНСТВЕННОЕ МЕСТО ДЛЯ ЗАМЕНЫ ИСТОЧНИКА НА GOOGLE/BING/SERPAPI */
+/* ЄДИНЕ МІСЦЕ ДЛЯ ЗАМІНИ ДЖЕРЕЛА НА GOOGLE/BING/SERPAPI */
 async function fetchResults(q){
   const url = `${API}?action=query&list=search&srsearch=${encodeURIComponent(q)}&srlimit=8&format=json&origin=*&srprop=snippet|wordcount|timestamp`;
   const res = await fetch(url);
@@ -56,13 +56,13 @@ async function fetchResults(q){
   return (data.query && data.query.search) || [];
 }
 
-/* ========= НЕЙРОСЕТЬ: 4 входа -> 4 скрытых -> 1 выход =========
-   Входы на каждый результат:
-   1. позиция в исходной выдаче (инвертированная, 1..0)
-   2. длина заголовка, нормализованная (короче — обычно точнее)
-   3. количество слов запроса, встретившихся в заголовке+сниппете (доля)
-   4. "свежесть"/размер статьи (нормализованный wordcount)
-   Обучается на кликах: выбранный результат -> цель 1, остальные показанные -> цель 0.15 */
+/* ========= НЕЙРОМЕРЕЖА: 4 входи -> 4 приховані -> 1 вихід =========
+   Входи на кожен результат:
+   1. позиція у вихідній видачі (інвертована, 1..0)
+   2. довжина заголовка, нормалізована (коротший — зазвичай точніший)
+   3. кількість слів запиту, що трапилися в заголовку+сніпеті (частка)
+   4. «свіжість»/розмір статті (нормалізований wordcount)
+   Навчається на кліках: обраний результат -> ціль 1, решта показаних -> ціль 0.15 */
 const STORAGE_KEY = 'neuro-web-search-weights-v1';
 function randW(n){ return Array.from({length:n},()=> (Math.random()*2-1)*0.5); }
 function loadWeights(){
@@ -132,17 +132,17 @@ function render(items){
   currentResults=items; activeIndex=-1;
   resultsEl.innerHTML='';
   if(!items.length){
-    resultsEl.innerHTML = '<div class="empty">Ничего не найдено (или нет соединения с интернетом).</div>';
-    countEl.textContent='0 результатов';
+    resultsEl.innerHTML = '<div class="empty">Нічого не знайдено (або немає з’єднання з інтернетом).</div>';
+    countEl.textContent='0 результатів';
     return;
   }
-  countEl.textContent = items.length + ' результатов';
+  countEl.textContent = items.length + ' результатів';
   items.forEach((r,i)=>{
     const div=document.createElement('div');
     div.className='result';
     div.innerHTML=`
       <div class="top-row"><span class="title">${r.title}</span><span class="score">${(r.out*100).toFixed(0)}%</span></div>
-      <div class="url">ru.wikipedia.org/wiki/${encodeURIComponent(r.title.replace(/ /g,'_'))}</div>
+      <div class="url">uk.wikipedia.org/wiki/${encodeURIComponent(r.title.replace(/ /g,'_'))}</div>
       <div class="snippet">${r.snippet}</div>`;
     div.addEventListener('click', ()=>choose(i));
     div.addEventListener('mouseenter', ()=>setActive(i));
@@ -158,8 +158,7 @@ function choose(i){
   currentResults.forEach((r,idx)=> trainStep(r.feats, idx===i?1:0.15, NET));
   NET.trained=(NET.trained||0)+1;
   saveWeights(NET);
-  netstateEl.textContent = `сеть обучилась (${NET.trained})`;
-  const url = `https://ru.wikipedia.org/wiki/${encodeURIComponent(chosen.title.replace(/ /g,'_'))}`;
+  const url = `https://uk.wikipedia.org/wiki/${encodeURIComponent(chosen.title.replace(/ /g,'_'))}`;
   window.open(url, '_blank');
 }
 
@@ -168,10 +167,10 @@ async function runSearch(q){
   suggEl.innerHTML='';
   if(!q.trim()){ render([]); resultsEl.innerHTML=''; countEl.textContent=''; return; }
   dotEl.classList.add('busy');
-  countEl.textContent='ищу…';
+  countEl.textContent='шукаю…';
   try{
     const raw = await fetchResults(q);
-    if(seq!==requestSeq) return; // пришёл устаревший ответ — игнорируем
+    if(seq!==requestSeq) return; // прийшла застаріла відповідь — ігноруємо
     const queryTokens = q.toLowerCase().split(/\s+/).filter(Boolean);
     const scored = raw.map((item,i)=>{
       const feats = featuresFor(item, i, raw.length, queryTokens);
@@ -182,7 +181,7 @@ async function runSearch(q){
     render(scored);
   }catch(e){
     if(seq!==requestSeq) return;
-    resultsEl.innerHTML = '<div class="empty">Не удалось получить данные. Проверьте интернет-соединение.</div>';
+    resultsEl.innerHTML = '<div class="empty">Не вдалося отримати дані. Перевірте інтернет-з’єднання.</div>';
     countEl.textContent='';
   }finally{
     if(seq===requestSeq) dotEl.classList.remove('busy');
@@ -208,7 +207,7 @@ input.addEventListener('keydown', e=>{
 resetBtn.addEventListener('click', ()=>{
   try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
   NET=loadWeights();
-  netstateEl.textContent='сеть готова';
+  netstateEl.textContent='мережа готова';
   if(input.value.trim()) runSearch(input.value);
 });
 </script>
